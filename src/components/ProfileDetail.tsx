@@ -210,7 +210,7 @@ export function ProfileDetail({ profile, onBack }: ProfileDetailProps) {
                     Contacto Directo
                   </h3>
                   
-                  <p className="text-center text-[#ebd8b7] font-sans tracking-[0.2em] text-xl md:text-2xl font-light mb-8 relative z-10">
+                  <p className="text-center text-[#ebd8b7] font-sans tracking-[0.1em] sm:tracking-[0.2em] text-lg sm:text-xl md:text-2xl font-light mb-8 relative z-10 whitespace-nowrap">
                     {profile.phone}
                   </p>
                   

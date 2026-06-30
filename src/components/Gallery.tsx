@@ -128,7 +128,7 @@ export function Gallery({ profiles, onBack, onSelectProfile, isRandomMode }: Gal
                          </div>
                       </div>
                       {profile.isNew && (
-                        <div className="absolute top-2 right-2 bg-[#c47d57] text-[#0a0808] text-[8px] md:text-[10px] font-bold px-2 py-1 uppercase tracking-widest z-10 shadow-lg shadow-[#c47d57]/20 border border-[#ebd8b7]/30">
+                        <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-[#c47d57] text-[#0a0808] text-[6px] sm:text-[7px] md:text-[10px] font-bold px-1 py-0.5 md:px-2 md:py-1 uppercase tracking-widest z-10 shadow-lg shadow-[#c47d57]/20 border border-[#ebd8b7]/30">
                           Nueva
                         </div>
                       )}
