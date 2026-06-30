@@ -15,4 +15,5 @@ export interface Profile {
   isActive?: boolean;
   category?: 'EXCELLENCE' | 'PLUS' | 'CLASSIC';
   isNew?: boolean;
+  orderPosition?: number;
 }

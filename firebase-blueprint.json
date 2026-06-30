@@ -1,0 +1,33 @@
+{
+  "schema": {
+    "profiles": {
+      "type": "collection",
+      "description": "Profiles list",
+      "fields": {
+        "id": { "type": "number", "description": "ID" },
+        "name": { "type": "string", "description": "Name" },
+        "age": { "type": "number", "description": "Age" },
+        "height": { "type": "string", "description": "Height" },
+        "measurements": { "type": "string", "description": "Measurements" },
+        "eyeColor": { "type": "string", "description": "Eye Color" },
+        "zone": { "type": "string", "description": "Zone" },
+        "schedule": { "type": "string", "description": "Schedule" },
+        "description": { "type": "string", "description": "Description" },
+        "phone": { "type": "string", "description": "Phone" },
+        "acceptsWhatsapp": { "type": "boolean", "description": "Accepts Whatsapp" },
+        "images": { "type": "array", "description": "Images" },
+        "videos": { "type": "array", "description": "Videos" },
+        "isActive": { "type": "boolean", "description": "Is Active" },
+        "category": { "type": "string", "description": "Category" },
+        "isNew": { "type": "boolean", "description": "Is New" }
+      }
+    },
+    "settings": {
+      "type": "collection",
+      "description": "Global settings",
+      "fields": {
+        "isRandomMode": { "type": "boolean", "description": "Is random mode" }
+      }
+    }
+  }
+}

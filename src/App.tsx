@@ -4,6 +4,8 @@
  */
 import { useState, useEffect } from 'react';
 import localforage from 'localforage';
+import { collection, doc, getDocs, setDoc, getDoc, writeBatch } from 'firebase/firestore';
+import { db } from './firebase';
 import { AgeGate } from './components/AgeGate';
 import { HomeContent } from './components/HomeContent';
 import { Gallery } from './components/Gallery';
@@ -23,29 +25,101 @@ export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      localforage.getItem<Profile[]>('aura_profiles_v3'),
-      localforage.getItem<boolean>('aura_random_mode')
-    ]).then(([savedProfiles, savedRandomMode]) => {
-      if (savedProfiles) {
-        setProfiles(savedProfiles);
-      } else {
-        setProfiles(initialProfiles);
+    const loadData = async () => {
+      try {
+        const [savedLocalProfiles, savedLocalRandomMode] = await Promise.all([
+          localforage.getItem<Profile[]>('aura_profiles_v3'),
+          localforage.getItem<boolean>('aura_random_mode')
+        ]);
+
+        const profilesSnap = await getDocs(collection(db, 'profiles'));
+        const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
+
+        let finalProfiles = initialProfiles;
+        let finalRandomMode = false;
+
+        if (profilesSnap.empty) {
+          // If Firestore is empty, try to migrate from localForage or use initial
+          if (savedLocalProfiles && savedLocalProfiles.length > 0) {
+            finalProfiles = savedLocalProfiles;
+          }
+          if (savedLocalRandomMode !== null) {
+            finalRandomMode = savedLocalRandomMode;
+          }
+          
+          // Migrate to Firestore
+          const batch = writeBatch(db);
+          finalProfiles.forEach((p, index) => {
+            const profileRef = doc(collection(db, 'profiles'), p.id.toString());
+            batch.set(profileRef, { ...p, orderPosition: index });
+          });
+          const globalRef = doc(db, 'settings', 'global');
+          batch.set(globalRef, { isRandomMode: finalRandomMode });
+          await batch.commit();
+        } else {
+          // Load from Firestore
+          finalProfiles = profilesSnap.docs.map(doc => doc.data() as Profile);
+          // Sort by orderPosition to maintain manual order
+          finalProfiles.sort((a, b) => (a.orderPosition || 0) - (b.orderPosition || 0));
+          
+          if (settingsDoc.exists()) {
+            finalRandomMode = settingsDoc.data().isRandomMode || false;
+          }
+        }
+
+        setProfiles(finalProfiles);
+        setIsRandomMode(finalRandomMode);
+      } catch (e) {
+        console.error("Error loading data:", e);
+        // Fallback to local
+        const [savedLocalProfiles, savedLocalRandomMode] = await Promise.all([
+          localforage.getItem<Profile[]>('aura_profiles_v3'),
+          localforage.getItem<boolean>('aura_random_mode')
+        ]);
+        if (savedLocalProfiles) setProfiles(savedLocalProfiles);
+        if (savedLocalRandomMode !== null) setIsRandomMode(savedLocalRandomMode);
+      } finally {
+        setIsLoaded(true);
       }
-      if (savedRandomMode !== null) {
-        setIsRandomMode(savedRandomMode);
-      }
-      setIsLoaded(true);
-    }).catch((e) => {
-      console.error(e);
-      setIsLoaded(true);
-    });
+    };
+    loadData();
   }, []);
 
   useEffect(() => {
     if (isLoaded) {
       localforage.setItem('aura_profiles_v3', profiles).catch(console.error);
       localforage.setItem('aura_random_mode', isRandomMode).catch(console.error);
+      
+      const syncToFirebase = async () => {
+        try {
+          const profilesSnap = await getDocs(collection(db, 'profiles'));
+          const currentDbIds = profilesSnap.docs.map(d => d.id);
+          const currentLocalIds = profiles.map(p => p.id.toString());
+          
+          const batch = writeBatch(db);
+          
+          // Delete removed profiles
+          currentDbIds.forEach(dbId => {
+            if (!currentLocalIds.includes(dbId)) {
+              batch.delete(doc(db, 'profiles', dbId));
+            }
+          });
+
+          // Update/Add existing profiles
+          profiles.forEach((p, index) => {
+            const profileRef = doc(db, 'profiles', p.id.toString());
+            batch.set(profileRef, { ...p, orderPosition: index });
+          });
+          
+          const globalRef = doc(db, 'settings', 'global');
+          batch.set(globalRef, { isRandomMode }, { merge: true });
+          
+          await batch.commit();
+        } catch (error) {
+          console.error("Error saving to Firestore:", error);
+        }
+      };
+      syncToFirebase();
     }
   }, [profiles, isRandomMode, isLoaded]);
 
