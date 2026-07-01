@@ -57,6 +57,10 @@ export default function App() {
         } else {
           // Load from Firestore
           finalProfiles = profilesSnap.docs.map(doc => doc.data() as Profile);
+          
+          // Remove test profiles
+          finalProfiles = finalProfiles.filter(p => !p.name.startsWith('Mía ') && !p.name.startsWith('Valeria ') && !p.name.startsWith('Sofía '));
+
           // Sort by orderPosition to maintain manual order
           finalProfiles.sort((a, b) => (a.orderPosition || 0) - (b.orderPosition || 0));
           
