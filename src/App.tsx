@@ -27,9 +27,10 @@ export default function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [savedLocalProfiles, savedLocalRandomMode] = await Promise.all([
+        const [savedLocalProfiles, savedLocalRandomMode, v4Migrated] = await Promise.all([
           localforage.getItem<Profile[]>('aura_profiles_v3'),
-          localforage.getItem<boolean>('aura_random_mode')
+          localforage.getItem<boolean>('aura_random_mode'),
+          localforage.getItem<boolean>('aura_migrated_v4')
         ]);
 
         const profilesSnap = await getDocs(collection(db, 'profiles'));
@@ -38,24 +39,21 @@ export default function App() {
         let finalProfiles = initialProfiles;
         let finalRandomMode = false;
 
-        if (profilesSnap.empty) {
-          // If Firestore is empty, try to migrate from localForage or use initial
-          if (savedLocalProfiles && savedLocalProfiles.length > 0) {
-            finalProfiles = savedLocalProfiles;
-          }
-          if (savedLocalRandomMode !== null) {
-            finalRandomMode = savedLocalRandomMode;
-          }
-          
-          // Migrate to Firestore
+        if (!v4Migrated || profilesSnap.empty) {
+          // FORCE SEED FOR TEST
           const batch = writeBatch(db);
+          // delete old ones just in case
+          profilesSnap.docs.forEach(d => batch.delete(d.ref));
+          
           finalProfiles.forEach((p, index) => {
-            const profileRef = doc(collection(db, 'profiles'), p.id.toString());
+            const profileRef = doc(db, 'profiles', p.id.toString());
             batch.set(profileRef, { ...p, orderPosition: index });
           });
           const globalRef = doc(db, 'settings', 'global');
           batch.set(globalRef, { isRandomMode: finalRandomMode });
           await batch.commit();
+          
+          await localforage.setItem('aura_migrated_v4', true);
         } else {
           // Load from Firestore
           finalProfiles = profilesSnap.docs.map(doc => doc.data() as Profile);

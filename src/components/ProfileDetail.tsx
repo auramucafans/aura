@@ -153,13 +153,16 @@ export function ProfileDetail({ profile, onBack }: ProfileDetailProps) {
                   <span className="text-[#c47d57] font-sans text-[10px] uppercase tracking-[0.4em] mb-4 block opacity-80 flex items-center justify-center gap-3">
                     {profile.category || 'CLASSIC'}
                     {profile.isNew && (
-                      <span className="bg-[#c47d57] text-[#0a0808] px-2 py-0.5 font-bold tracking-widest border border-[#ebd8b7]/30 shadow-[0_0_15px_rgba(196,125,87,0.3)]">
-                        NUEVA
+                      <span className="bg-[#c47d57]/20 border border-[#c47d57]/50 text-[#c47d57] px-2 py-0.5 rounded-sm font-bold tracking-widest text-[9px]">
+                        <span className="md:hidden">NEW</span>
+                        <span className="hidden md:inline">NUEVA</span>
                       </span>
                     )}
                   </span>
-                  <h1 className="text-3xl md:text-5xl font-serif text-[#ebd8b7] mb-6 font-normal tracking-widest uppercase">
-                    {profile.name}
+                  <h1 className="text-2xl sm:text-3xl md:text-5xl font-serif text-[#ebd8b7] mb-6 font-normal tracking-[0.1em] md:tracking-widest uppercase flex flex-col justify-center items-center w-full overflow-hidden">
+                    {profile.name.split(' ').map((word, i) => (
+                      <span key={i} className="block leading-tight whitespace-nowrap">{word}</span>
+                    ))}
                   </h1>
                   <div className="flex justify-center items-center gap-4">
                     <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#c47d57]/50"></div>

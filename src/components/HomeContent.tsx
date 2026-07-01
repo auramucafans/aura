@@ -89,8 +89,8 @@ export function HomeContent({ onEnterGallery, onAdminAccess }: HomeContentProps)
         <motion.h2 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.8 }}
-          className="text-3xl md:text-4xl font-serif text-[#c47d57] mb-6 font-normal tracking-widest uppercase"
+          transition={{ duration: 1.5, delay: 0.8 }}
+          className="text-3xl md:text-4xl font-serif text-[#c47d57] mb-8 font-light tracking-[0.3em] uppercase drop-shadow-sm"
         >
           Descubre AURA
         </motion.h2>
@@ -98,8 +98,8 @@ export function HomeContent({ onEnterGallery, onAdminAccess }: HomeContentProps)
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 1.1 }}
-          className="text-[#9a8c88] text-lg font-light font-sans leading-relaxed max-w-xl mx-auto mb-10"
+          transition={{ duration: 1.5, delay: 1.1 }}
+          className="text-[#9a8c88] text-base md:text-lg font-light font-sans leading-relaxed tracking-wide max-w-xl mx-auto mb-12"
         >
           Has ingresado a nuestro portal exclusivo. 
           <br className="hidden md:block" /> 
@@ -113,10 +113,10 @@ export function HomeContent({ onEnterGallery, onAdminAccess }: HomeContentProps)
         >
           <button 
             onClick={onEnterGallery}
-            className="group relative py-4 px-10 bg-transparent overflow-hidden border border-[#c47d57]/30 hover:border-[#c47d57]/60 transition-all duration-500 rounded-sm"
+            className="group relative py-4 px-12 bg-transparent overflow-hidden border border-[#c47d57]/20 hover:border-[#c47d57]/80 hover:shadow-[0_0_20px_rgba(196,125,87,0.1)] transition-all duration-700 rounded-sm"
           >
-            <div className="absolute inset-0 bg-[#c47d57]/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-            <span className="relative z-10 text-[#ebd8b7] font-serif uppercase tracking-widest text-sm group-hover:text-[#fff] transition-colors duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#c47d57]/5 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-in-out"></div>
+            <span className="relative z-10 text-[#ebd8b7]/90 font-serif uppercase tracking-[0.25em] text-xs md:text-sm group-hover:text-[#fff] transition-colors duration-500">
               Ingresar a nuestra galería
             </span>
           </button>
